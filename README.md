@@ -29,6 +29,8 @@ La empresa XYZ Corp está buscando utilizar una frase que refleje sus valores y 
 ├── requirements.txt
 ├── README.md
 ├── logs/
+├── ├── scraper.log
+│   └── database.log
 ├── scripts/
 │   ├── scraper.py
 │   └── database.py
@@ -110,11 +112,7 @@ Las contribuciones son bienvenidas. Si deseas contribuir, por favor sigue estos 
 4. Empuja tu rama (`git push origin feature/mi-feature`).
 5. Crea un nuevo Pull Request.
 
-## Licencia
 
-Este proyecto está bajo la Licencia MIT - consulta el archivo [LICENSE](LICENSE) para más detalles.
 
----
+## ¡Gracias por usar la aplicación Quotes and Authors!
 
-¡Gracias por usar la aplicación Quotes and Authors!
-```
