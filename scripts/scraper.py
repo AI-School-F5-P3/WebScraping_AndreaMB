@@ -7,17 +7,26 @@ import os
 from database import save_to_mongodb, save_authors_to_mongodb
 
 # Crear directorio de logs si no existe
-os.makedirs('../logs', exist_ok=True)
+log_dir = 'logs'
+os.makedirs(log_dir, exist_ok=True)
 
 # Configuración del registro de logs
-logging.basicConfig(filename='../logs/scraper.log', level=logging.INFO,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
+logging.basicConfig(
+    filename=os.path.join(log_dir, 'scraper.log'),
+    level=logging.INFO,
+    format='%(asctime)s:%(levelname)s:%(message)s',
+    filemode='a',
+    handlers=[
+        logging.FileHandler(os.path.join(log_dir, 'scraper.log'))
+    ]
+)
 
 # Obtener la URL
 
 base_url = 'https://quotes.toscrape.com/'
 
 def get_quotes_from_page(url):
+    logging.info(f"Accediendo a la URL: {url}")
     requests_get = requests.get(url)
     get_html = requests_get.text
 
@@ -48,6 +57,8 @@ def get_quotes_from_page(url):
                 "Tags": tags_quotes
             }
         quotes.append(temporal_dict)
+        
+    logging.info(f"Found {len(quotes)} quotes on page: {url}")
 
     return quotes
 
@@ -57,7 +68,6 @@ def get_all_quotes():
 
     while True:
         url = f"{base_url}page/{page}/"
-        logging.info(f"Accediendo a la URL: {url}")
         quotes = get_quotes_from_page(url)
         if not quotes:
             break
@@ -67,6 +77,7 @@ def get_all_quotes():
     return all_quotes
 
 def get_author_details(author_url):
+    logging.info(f"Accediendo a la URL del autor: {author_url}")
     requests_get = requests.get(author_url)
     get_html = requests_get.text
 
@@ -101,14 +112,17 @@ def get_all_authors(quotes):
     return all_authors
 
 def main():
+    logging.info('Inicio del scraper')
     all_quotes = get_all_quotes()
     quotes_df = pd.DataFrame(all_quotes, columns=['Quote', 'Author', 'Author_About', 'Tags'])
+    logging.info('Quotes obtenidas y convertidas a DataFrame')
     print(quotes_df.head(10))
     save_to_mongodb(all_quotes)
     logging.info("Datos guardados en MongoDB.")
 
     all_authors = get_all_authors(all_quotes)
     authors_df = pd.DataFrame(all_authors, columns=['Name', 'Born_Date', 'Born_Location', 'Description', 'URL'])
+    logging.info('Autores obtenidos y convertidos a DataFrame')
     print(authors_df.head(10))
     save_authors_to_mongodb(all_authors)
     logging.info("Datos de los autores guardados en MongoDB.")

@@ -1,18 +1,26 @@
 from pymongo import MongoClient
 import logging
 import os
+
 # Crear directorio de logs si no existe
-os.makedirs('../logs', exist_ok=True)
+log_dir = 'logs'
+os.makedirs(log_dir, exist_ok=True)
 
 # Configuración del registro de logs
-logging.basicConfig(filename='../logs/database.log', level=logging.INFO,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s:%(levelname)s:%(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(log_dir, 'database.log'))
+    ]
+)
 
 def connect_to_mongodb():
     try:
         client = MongoClient("mongodb://localhost:27017/")
         db = client["quotes_database"]
         collection = db["quotes"]
+        logging.info("Conexión a MongoDB establecida con éxito.")
         return collection
     except Exception as e:
         logging.error(f"Error al conectar a MongoDB: {e}")
